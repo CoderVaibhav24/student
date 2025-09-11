@@ -1,0 +1,87 @@
+<div class="min-h-screen bg-gradient-to-br from-brand-50 via-white to-brand-100 p-6">
+  <div class="max-w-5xl mx-auto space-y-6">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a routerLink="/students" class="text-brand-700 underline">← Back</a>
+        <h1 class="text-2xl font-bold text-brand-800">Student Detail</h1>
+      </div>
+      <button *ngIf="isAdmin()" class="btn-primary w-auto px-4" (click)="editOpen.set(true)">Edit</button>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="card p-6">
+        <h2 class="text-lg font-semibold mb-2">{{ student()?.full_name }}</h2>
+        <div class="text-sm text-gray-700 space-y-1">
+          <div><span class="font-medium">Class:</span> {{ student()?.class_name }} / {{ student()?.section_name || '—' }}</div>
+          <div><span class="font-medium">Email:</span> {{ student()?.email || '—' }}</div>
+          <div><span class="font-medium">Phone:</span> {{ student()?.phone || '—' }}</div>
+          <div><span class="font-medium">Guardian:</span> {{ student()?.guardian_name || '—' }}</div>
+          <div><span class="font-medium">Status:</span> {{ student()?.status }}</div>
+        </div>
+      </div>
+
+      <div class="card p-6">
+        <h2 class="text-lg font-semibold mb-3">Comments</h2>
+        <div class="space-y-3 max-h-80 overflow-auto">
+          <div *ngFor="let c of comments()" class="rounded-xl bg-white/70 px-3 py-2">
+            <div class="text-sm">{{ c.body }}</div>
+            <div class="text-[11px] text-gray-500 mt-1">{{ c.created_at | date:'short' }}</div>
+          </div>
+          <div *ngIf="comments().length===0" class="text-sm text-gray-500">No comments</div>
+        </div>
+
+        <form *ngIf="canComment()" [formGroup]="commentForm" (ngSubmit)="addComment()" class="mt-4 flex gap-2">
+          <input class="input flex-1" placeholder="Add a comment…" formControlName="body">
+          <button class="btn-primary w-auto px-4" type="submit">Post</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Edit modal -->
+    <div *ngIf="editOpen()" class="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+      <div class="card w-full max-w-xl p-6">
+        <h2 class="text-lg font-semibold mb-4">Edit Student</h2>
+        <form [formGroup]="form" (ngSubmit)="save()" class="grid gap-4 md:grid-cols-2">
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium">Full name</label>
+            <input class="input mt-1" formControlName="full_name">
+          </div>
+          <div>
+            <label class="block text-sm font-medium">Class</label>
+            <input class="input mt-1" formControlName="class_name">
+          </div>
+          <div>
+            <label class="block text-sm font-medium">Section</label>
+            <input class="input mt-1" formControlName="section_name">
+          </div>
+          <div>
+            <label class="block text-sm font-medium">Email</label>
+            <input class="input mt-1" formControlName="email">
+          </div>
+          <div>
+            <label class="block text-sm font-medium">Phone</label>
+            <input class="input mt-1" formControlName="phone">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium">Guardian</label>
+            <input class="input mt-1" formControlName="guardian_name">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium">Status</label>
+            <select class="input mt-1" formControlName="status">
+              <option value="active">active</option>
+              <option value="inactive">inactive</option>
+              <option value="alumni">alumni</option>
+            </select>
+          </div>
+
+          <div class="md:col-span-2 flex gap-2">
+            <button class="btn-primary" type="submit">Save</button>
+            <button type="button" class="btn-primary bg-gray-300 text-gray-800 hover:bg-gray-400 active:bg-gray-500" (click)="editOpen.set(false)">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
